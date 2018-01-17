@@ -1,0 +1,71 @@
+language: java
+jdk:
+  - oraclejdk8
+branches:
+  only:
+    - develop
+    - master
+    - /^release.*$/
+    - /^hotfix.*$/
+
+scripts:
+  - gradle clean build 
+
+# sudo: false
+# env:
+#   global:
+#     - tmp=${TRAVIS_BRANCH:0:3}
+#     - tmp=${tmp/mas/product}
+#     - tmp=${tmp/hot/product}
+#     - tmp=${tmp/rel/stage}
+#     - STAGE=${tmp}
+#     - DEPLOY_BUCKET=kairex-code-deploy
+#     - CONFIGURE_BUCKET=kairex-configure
+#     - REGION=ap-northeast-2
+#     - ZIP_FILE_NAME=kairex.zip
+#
+# before_install:
+#   - sudo pip install awscli
+#   - mkdir ~/.aws
+#   - printf "[default]\naws_access_key_id = ${ACCESS_KEY}\naws_secret_access_key = ${SECRET_ACCESS_KEY}\nregion = ap-northeast-2" > ~/.aws/credentials
+#   - aws s3 cp s3://${CONFIGURE_BUCKET}/${TRAVIS_REPO_SLUG:14}/ ./src/main/resources/ --recursive
+#   - echo "sudo java -jar -Dspring.profiles.active=${STAGE} *.jar > /dev/null 2> /dev/null &" >> ./scripts/start_server
+# #  - echo "sudo java -jar -Dspring.profiles.active=${STAGE} *.jar > /home/ec2-user/springboot.log &" >> ./scripts/start_server
+# #  sudo java -jar -Dspring.profiles.active=dev *.jar > /dev/null 2> /dev/null &
+#
+# script:
+#   - gradle clean build
+#
+# after_success:
+#   - zip -r ${ZIP_FILE_NAME} * || true
+#   - mkdir -p "upload"
+#   - echo | mv ${ZIP_FILE_NAME} upload || true
+#   - ls -al
+#
+# deploy:
+#   - provider: s3
+#     access_key_id: ${ACCESS_KEY}
+#     secret_access_key: ${SECRET_ACCESS_KEY}
+#     bucket: ${DEPLOY_BUCKET}
+#     region: ${REGION}
+#     skip_cleanup: true
+#     upload-dir: ${TRAVIS_REPO_SLUG:14}/${STAGE}
+#     local_dir: ${TRAVIS_BUILD_DIR}/upload/
+#     on:
+#       all_branches: true
+#       condition: $STAGE = stage || $STAGE = dev || $STAGE = product
+#
+#   - provider: codedeploy
+#     access_key_id: ${ACCESS_KEY}
+#     secret_access_key: ${SECRET_ACCESS_KEY}
+#     bucket: ${DEPLOY_BUCKET}
+#     region: ${REGION}
+#     key: ${TRAVIS_REPO_SLUG:14}/${STAGE}/${ZIP_FILE_NAME}
+#     application: ${TRAVIS_REPO_SLUG:14}
+#     deployment_group: ${STAGE}
+#     on:
+#       all_branches: true
+#       condition: $STAGE = stage || $STAGE = dev
+#
+# notifications:
+#   slack: greenstage-lab:yPrdDwU2I9WoJLNYmuq85ypD
